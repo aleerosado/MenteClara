@@ -1,3 +1,9 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+data/*.csv
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
