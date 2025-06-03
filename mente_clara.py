@@ -1,6 +1,21 @@
 import streamlit as st
 from utils import stroop
 from utils import digit_span
+from utils import atencion
+
+def calcular_resumen(resultados):
+    total = len(resultados)
+    aciertos = sum(1 for correcto, _ in resultados if correcto)
+    tiempo_promedio = round(sum(t for _, t in resultados) / total, 2) if total else 0
+    return aciertos, total, tiempo_promedio
+
+def mensaje_motivador(aciertos, total):
+    if aciertos == total:
+        return "¡Excelente! 🌟 Has acertado todas las respuestas."
+    elif aciertos >= total * 0.7:
+        return "¡Muy bien! 🎯 Tienes un buen nivel de atención."
+    else:
+        return "No te desanimes. 💪 Sigue practicando y mejorando."
 
 
 # Inicializar estado de navegación
@@ -66,12 +81,37 @@ elif st.session_state.pantalla == 'atencion_intro':
 
 # --- Atención sostenida (placeholder) ---
 elif st.session_state.pantalla == 'atencion':
-    st.text("Aquí irá la lógica del test de atención.")
-    if st.button("Ver resultados"):
-        cambiar_pantalla('resultados')
+    atencion.iniciar_atencion()
+    fin_test = atencion.mostrar_ronda(callback_siguiente=lambda: cambiar_pantalla('resultados'))
 
 # --- Resultados finales ---
 elif st.session_state.pantalla == 'resultados':
-    st.success("¡Has completado la evaluación!")
-    st.markdown("Aquí aparecerá un resumen de tus resultados.")
-    st.button("Volver al inicio", on_click=lambda: cambiar_pantalla('inicio'))
+    st.title("🎉 ¡Resultados de tu evaluación!")
+
+    # Stroop
+    if 'stroop_resultados' in st.session_state:
+        aciertos, total, tiempo = calcular_resumen(st.session_state.stroop_resultados)
+        st.subheader("🟥 Stroop Test")
+        st.markdown(f"**Aciertos:** {aciertos}/{total}")
+        st.markdown(f"**Tiempo promedio:** {tiempo} segundos")
+        st.info(mensaje_motivador(aciertos, total))
+
+    # Digit Span
+    if 'digit_resultados' in st.session_state:
+        aciertos, total, tiempo = calcular_resumen(st.session_state.digit_resultados)
+        st.subheader("🔢 Digit Span Test")
+        st.markdown(f"**Aciertos:** {aciertos}/{total}")
+        st.markdown(f"**Tiempo promedio:** {tiempo} segundos")
+        st.info(mensaje_motivador(aciertos, total))
+
+    # Atención sostenida
+    if 'atencion_resultados' in st.session_state:
+        aciertos, total, tiempo = calcular_resumen(st.session_state.atencion_resultados)
+        st.subheader("🎯 Atención Sostenida")
+        st.markdown(f"**Aciertos:** {aciertos}/{total}")
+        st.markdown(f"**Tiempo promedio:** {tiempo} segundos")
+        st.info(mensaje_motivador(aciertos, total))
+
+    st.success("¡Gracias por participar en Mente Clara!")
+    if st.button("Volver al inicio"):
+        cambiar_pantalla('inicio')
