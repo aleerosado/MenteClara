@@ -1,5 +1,7 @@
 import streamlit as st
 from utils import stroop
+from utils import digit_span
+
 
 # Inicializar estado de navegación
 if 'pantalla' not in st.session_state:
@@ -48,10 +50,11 @@ elif st.session_state.pantalla == 'digit_intro':
     if st.button("Iniciar Digit Span"):
         cambiar_pantalla('digit')
 
-# --- Digit Span (placeholder) ---
+# --- Digit Span Test ---
 elif st.session_state.pantalla == 'digit':
-    st.text("Aquí irá la lógica del Digit Span.")
-    if st.button("Continuar"):
+    digit_span.iniciar_digit_span()
+    fin_test = digit_span.mostrar_secuencia()
+    if fin_test:
         cambiar_pantalla('atencion_intro')
 
 # --- Instrucciones Atención sostenida ---
